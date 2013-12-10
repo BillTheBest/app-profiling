@@ -1,26 +1,33 @@
 var webdriver = require('selenium-webdriver');
 var chrome = webdriver.Capabilities.chrome();
 var join = require('path').join || require('fs').join;
-
-var checks = require("./lib/check_prerequisites.js");
-checks.checkPrerequisites(function(res){console.log(res)});
-
-chrome.set("chromeOptions",{
-	'args':[
-		'--allow-legacy-extension-manifests',
-		'--start-maximized',
-		'--no-first-run',
-		'--enable-extension-timeline-api',
-		'--user-data-dir='+join(__dirname,'userProfile'),
-		'--load-extension='+join(__dirname,'speedtracer/src/Release/speedtracerheadless')
-		],
-	'extensions':[]//[join(__dirname,'speedtracer/src/Release/speedtracer.crx')]
-});
-
 var driver;
+
+
+var checkPrerequisitesCb = function(res){
+	console.log(res);
+	try{
+		init();
+	}catch(e){
+		driver.quit();
+		console.log(e);
+	}
+}
 
 //Start setup/test runner page
 var init = function(){
+	console.dir(chrome);
+	chrome.set("chromeOptions",{
+		'args':[
+			'--allow-legacy-extension-manifests',
+			'--start-maximized',
+			'--no-first-run',
+			'--enable-extension-timeline-api',
+			'--user-data-dir='+join(__dirname,'userProfile'),
+			'--load-extension='+join(__dirname,'speedtracer/src/Release/speedtracerheadless')
+			],
+		'extensions':[]//[join(__dirname,'speedtracer/src/Release/speedtracer.crx')]
+	});
 	driver = new webdriver.Builder().
 	   withCapabilities(chrome).
 	   build();
@@ -49,9 +56,4 @@ var loadPageForProfiling = function(){
 }
 
 
-try{
-	init();
-}catch(e){
-	driver.quit();
-	console.log(e);
-}
+require("./lib/check_prerequisites.js").checkPrerequisites(checkPrerequisitesCb,console.log,console.log,console.log);
