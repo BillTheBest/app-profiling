@@ -1,0 +1,36 @@
+{ "name": "app-profiling",
+  "version": "0.1.0",
+  "description": "Profiling procedure for Web applications",
+  "main": "main.js",
+  "author": "Martin Lasak <martin.lasak@fokus.fraunhofer.de>",
+  "homepage": "http://www.webinos.org",
+  "bugs": "http://jira.webinos.org",
+  "repository":
+   { "type": "git",
+     "url": "git://github.com/mlasak/app-profiling.git"
+   },
+  "directories": {
+    "userProfile": "./userProfile",
+    "scripts": "./scripts",
+    "lib": "./lib",
+    "doc": "./doc",
+    "tests": "./tests"
+  },
+  "dependencies":{
+    "selenium-webdriver" : "2.38.x"
+  },
+  "devDependencies": {
+    "jasmine-node": "1.x.x"
+  },
+  "engines": {
+    "node": ">= 0.10.0",
+    "npm": ">= 1.3.0"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "main": "main.js"
+  },
+  "scripts": {
+    "preinstall": "./scripts/build_tracer.sh"
+  }
+}
