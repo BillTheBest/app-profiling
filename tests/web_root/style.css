@@ -1,0 +1,30 @@
+* {
+	font-family: sans-serif;
+	font-size: 14px;
+}
+
+input[type=button] {
+	font-size: 11px;
+}
+
+input {
+	background-color: #eee;
+	padding: 1px;
+}
+
+.bold{
+	font-weight: bold;
+}
+
+.longwidth {
+	width: 30%;
+}
+
+.tab, .view, .invisible {
+	display: none;
+}
+
+input {
+	border:0;
+	border-bottom: 1px black dotted;
+}

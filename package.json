@@ -17,7 +17,9 @@
     "tests": "./tests"
   },
   "dependencies":{
-    "selenium-webdriver" : "2.38.x"
+    "express" : "3.4.x",
+    "shelljs" : "0.2.x",
+    "chrome-remote-interface": "git://github.com/cyrus-and/chrome-remote-interface.git"
   },
   "devDependencies": {
     "jasmine-node": "1.x.x"
@@ -28,9 +30,8 @@
   },
   "preferGlobal": true,
   "bin": {
-    "main": "main.js"
+    "main": "index.js"
   },
   "scripts": {
-    "preinstall": "./scripts/build_tracer.sh"
   }
 }

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# tdb: remove this file. speed tracer seems to be an abandoned project, switching to chromedevtools
+
 echo "### BUILDING TRACER ###"
 mkdir -p speedtracer
 cd speedtracer/

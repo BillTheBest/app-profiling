@@ -16,15 +16,15 @@ var checkPrerequisitesCb = function(res){
 
 //Start setup/test runner page
 var init = function(){
-	console.dir(chrome);
 	chrome.set("chromeOptions",{
 		'args':[
-			'--allow-legacy-extension-manifests',
+			//'--allow-legacy-extension-manifests',
 			'--start-maximized',
-			'--no-first-run',
-			'--enable-extension-timeline-api',
+			//'--no-first-run',
+			//'--remote-debugging-port=9111',
+			//'--enable-extension-timeline-api',
 			'--user-data-dir='+join(__dirname,'userProfile'),
-			'--load-extension='+join(__dirname,'speedtracer/src/Release/speedtracerheadless')
+			//'--load-extension='+join(__dirname,'speedtracer/src/Release/speedtracerheadless')
 			],
 		'extensions':[]//[join(__dirname,'speedtracer/src/Release/speedtracer.crx')]
 	});
@@ -32,12 +32,14 @@ var init = function(){
 	   withCapabilities(chrome).
 	   build();
 	driver.manage().window().maximize();
+
 	driver.get(join('file://',__dirname,'tests','index.html'));
+	driver.executeScript("window.bla=42");
 	driver.wait(function() {
 	 return driver.getTitle().then(function(title) {
 	   var res = title === 'Starting Application Profiling...';
 	   if(res){
-	   	loadPageForProfiling();
+	   	//loadPageForProfiling();
 	   }
 		return res;
 	 });
@@ -45,7 +47,7 @@ var init = function(){
 }
 
 var loadPageForProfiling = function(){
-	driver.get('http://localhost:8080/wtv/index.html?args=123&SpeedTracer=monitor,header(foo:bar),xhr(http://localhost:9876),timeout(5000)');
+	driver.get('http://localhost:8080/wtv/index.html');
 	driver.wait(function() {
 	 return driver.getTitle().then(function(title) {
 	   var t =  title === 'Index';
