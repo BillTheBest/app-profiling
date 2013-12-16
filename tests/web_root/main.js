@@ -301,6 +301,8 @@ $(function(){
 	$(".link.testsuites").click(linkTestsuites);
 	$(".link.reports").click(linkReports);
 	$(".link.listtestsuites").click(linkListTestsuites);
+	$(".link.listreports").click(startReport);
+	
 	$(".link.testsuite").click(linkTestsuite);
 	$(".tab.testsuites ul").click(linkTestsuite);
 	$(".tab.testsuites .view.testcase").click(clickTestsuite);

@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery-1.10.2.min.js"></script>
     <script type="text/javascript" src="main.js"></script>
+    <!--reporting-->
+    <link rel="stylesheet" type="text/css" href="report-style.css" />
+    <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="report-main.js"></script>
     <meta charset="UTF-8">
 </head>
 <body> 
@@ -37,7 +43,12 @@
 	    <div class="tabReportsActions">
 	    	<span class="link listreports"><a href="#">List Reports</a></span> 	
 	    </div> 	
+
+	    <div id="heap_chart" class="chart"></div>
+   		<div id="time_chart" class="chart"></div>
     </div>  
+
+
 
     
 </body>
