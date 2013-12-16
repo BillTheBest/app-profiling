@@ -8,13 +8,18 @@ function httpGet(theUrl){
 
 function createHeapChart(){
     var heap = JSON.parse(httpGet("/heap/"));
-    $('#heap_chart').highcharts('StockChart', {
+    var timestamps = JSON.parse(httpGet("/timestamps/"));
+
+    var options = {
         rangeSelector : {
             selected : 1
         },
 
         title : {
             text : 'Max Heap Usage during profiling'
+        },
+        legend:{
+            enabled :true
         },
         xAxis:{
             dateTimeLabelFormats: {
@@ -30,7 +35,7 @@ function createHeapChart(){
         },
         series : [{
             name : 'Heap Usage',
-            data : heap,
+            data : heap.data,
             type : 'area',
             threshold : null,
             tooltip : {
@@ -46,7 +51,26 @@ function createHeapChart(){
                 stops : [[0, Highcharts.getOptions().colors[0]], [1, 'rgba(0,0,0,0)']]
             }
         }]
-    });
+    };
+
+    var lastTime = 0;
+    for(var i=0; i<timestamps.data.length;i++){
+        var serie = {
+            name : timestamps.legend[i],
+            data: [[lastTime,heap.max], [timestamps.data[i],heap.max]],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                valueDecimals : 2
+            },
+            //fillColor: "green"
+            fillOpacity: 0.2
+        };
+        options.series.push(serie);
+        //alert(JSON.stringify(serie.data));
+        lastTime = timestamps.data[i] + 1 ;
+    }
+    $('#heap_chart').highcharts('StockChart', options);
 }
 
 function createFunctionTimeChart(){
