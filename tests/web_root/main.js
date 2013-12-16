@@ -18,13 +18,31 @@ var linkListTestsuites = function(){
 	  var items = [];
 	  $.each( data, function( key, val ) {
 	  	if(val&&val.name&&val.title)
-	    items.push( "<li data-file='" + val.name + "'>["+val.name+"] " + val.title + "</li>" );
+	    items.push( "<li data-file='" + val.name + "'>" + val.title + " (click to edit "+val.name+")" );
+			if (val.testCases){
+				items.push( "<ul>");
+				$.each( val.testCases, function( tcx, tcd ) {
+					items.push( "<li data-file='" + val.name + "' data-tc='" + tcx + "'>"+(tcx+1)+ ". " + tcd + " (click to execute)" );
+				});
+				items.push( "</ul>");
+			}
+			items.push( "</li>");
 	  });
 	 
 	  $(".tab.testsuites ul").empty();
 	  $(".tab.testsuites ul").append(items.join( "" ));
 	});
 	_viewModel = {visible:{}};
+};
+
+var executeTestcase = function(suite,tc){
+		$.getJSON( "/testsuite/"+suite+"/testcase/"+tc, function( data ) {
+		  if(!data || data.error){
+		  	$(".viewListLog").text(JSON.stringify(data.error));
+		  }else{
+		  	$(".viewListLog").text((tc+1)+". Testcase started of "+suite);
+		  }
+		});
 };
 
 var loadTestsuite = function(file){
@@ -81,7 +99,11 @@ var removeTestsuite = function(){
 
 var linkTestsuite = function(e){
 	var li = $(e.target).closest('li');
-	loadTestsuite(li.data("file"));
+	if(typeof li.data("tc") === "number"){
+		executeTestcase(li.data("file"),li.data("tc"));
+	} else {
+		loadTestsuite(li.data("file"));
+	}
 };
 
 var showTestsuite = function(){
@@ -302,7 +324,7 @@ $(function(){
 	$(".link.reports").click(linkReports);
 	$(".link.listtestsuites").click(linkListTestsuites);
 	$(".link.listreports").click(startReport);
-	
+
 	$(".link.testsuite").click(linkTestsuite);
 	$(".tab.testsuites ul").click(linkTestsuite);
 	$(".tab.testsuites .view.testcase").click(clickTestsuite);
