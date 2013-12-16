@@ -67,8 +67,7 @@ function createHeapChart(){
             fillOpacity: 0.2
         };
         options.series.push(serie);
-        //alert(JSON.stringify(serie.data));
-        lastTime = timestamps.data[i] + 1 ;
+        lastTime = timestamps.data[i];
     }
     $('#heap_chart').highcharts('StockChart', options);
 }
