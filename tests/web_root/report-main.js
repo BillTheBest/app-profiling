@@ -6,9 +6,11 @@ function httpGet(theUrl){
     return xmlHttp.responseText;
 }
 
-function createHeapChart(){
-    var heap = JSON.parse(httpGet("/heap/"));
-    var timestamps = JSON.parse(httpGet("/timestamps/"));
+function createHeapChart(round){
+    var heap = JSON.parse(httpGet("/heap/")).data[round];
+    var ts_data = JSON.parse(httpGet("/timestamps/"));
+    var timestamps = ts_data.data[round];
+    var legend = ts_data.legend[round];
 
     var options = {
         rangeSelector : {
@@ -35,7 +37,7 @@ function createHeapChart(){
         },
         series : [{
             name : 'Heap Usage',
-            data : heap.data,
+            data : heap,
             type : 'area',
             threshold : null,
             tooltip : {
@@ -54,10 +56,10 @@ function createHeapChart(){
     };
 
     var lastTime = 0;
-    for(var i=0; i<timestamps.data.length;i++){
+    for(var i=0; i<timestamps.length;i++){
         var serie = {
-            name : timestamps.legend[i],
-            data: [[lastTime,heap.max], [timestamps.data[i],heap.max]],
+            name : legend[i],
+            data: [[lastTime,heap.max], [timestamps[i],heap.max]],
             type : 'area',
             threshold : null,
             tooltip : {
@@ -67,14 +69,16 @@ function createHeapChart(){
             fillOpacity: 0.2
         };
         options.series.push(serie);
-        lastTime = timestamps.data[i];
+        lastTime = timestamps[i];
     }
-    $('#heap_chart').highcharts('StockChart', options);
+
+    $('#heap_chart_'+round).highcharts('StockChart', options);
 }
 
-function createFunctionTimeChart(){
-    var time = JSON.parse(httpGet("/functionstime/"));
-    $('#time_chart').highcharts({
+function createFunctionTimeChart(round){
+    var time = JSON.parse(httpGet("/functionstime/"))[round];
+
+    $('#time_chart_'+round).highcharts({
         chart: {
             plotBackgroundColor: null,
             plotBorderWidth: null,
@@ -107,9 +111,9 @@ function createFunctionTimeChart(){
     });
 }
 
-function createRPCNumberChart(){
+function createRPCNumberChart(round){
     var rpc_frequency = JSON.parse(httpGet("/rpcfrequency/"));
-    $('#rpc_frequency_chart').highcharts({
+    $('#rpc_frequency_chart_'+round).highcharts({
         chart: {
             type: 'column'
         },
@@ -141,14 +145,14 @@ function createRPCNumberChart(){
         },
         series: [{
             name: '#RPCs',
-            data: rpc_frequency.data
+            data: rpc_frequency.data[round]
         }]
     });
 }
 
-function createRPCTrafficChart(){
+function createRPCTrafficChart(round){
     var rpc_traffic = JSON.parse(httpGet("/rpctraffic/"));
-    $('#rpc_traffic_chart').highcharts({
+    $('#rpc_traffic_chart_'+round).highcharts({
         chart: {
             type: 'column'
         },
@@ -180,14 +184,14 @@ function createRPCTrafficChart(){
         },
         series: [{
             name: 'Bytes',
-            data: rpc_traffic.data
+            data: rpc_traffic.data[round]
         }]
     });
 }
 
 function startReport(){
-    createHeapChart();
-    createFunctionTimeChart();
-    createRPCNumberChart();
-    createRPCTrafficChart();
+    createHeapChart("1111");
+    createFunctionTimeChart("1111");
+    createRPCNumberChart("1111");
+    createRPCTrafficChart("1111");
 }
