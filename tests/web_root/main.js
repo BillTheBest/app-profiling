@@ -65,6 +65,7 @@ var linkReport = function(e){
 		$.getJSON( "/report/"+li.data("file")+"/testcase/"+li.data("tc"), function( data ) {
 			if(data&&data.status==="ok"){
 				$(".viewReportListLog").text("conversion ok.");
+				startReport();
 
 			}else{
 				$(".viewReportListLog").text("conversion failed.");
