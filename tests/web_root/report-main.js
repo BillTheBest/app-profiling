@@ -8,18 +8,12 @@ function httpGet(theUrl){
 
 function createHeapChart(){
     var heap_data = JSON.parse(httpGet("/heap/"));
-    // var heap = heap_data.data[round];
-    // var max = heap_data.max[round];
-
     var ts_data = JSON.parse(httpGet("/timestamps/"));
-    // var timestamps = ts_data.data[round];
-    // var legend = ts_data.legend[round];
 
     var options = {
         rangeSelector : {
             selected : 1
         },
-
         title : {
             text : 'Max Heap Usage during profiling'
         },
@@ -28,90 +22,63 @@ function createHeapChart(){
         },
         xAxis:{
             dateTimeLabelFormats: {
-                millisecond: '%S.%L',
-                second: '%H:%M:%S',
-                minute: '%H:%M',
-                hour: '%H:%M',
-                day: '%e. %b',
-                week: '%e. %b',
-                month: '%b \'%y',
-                year: '%Y'
+                millisecond: '%S.%Ls'
+                // ,
+                // second: '%H:%M:%S',
+                // minute: '%H:%M',
+                // hour: '%H:%M',
+                // day: '%e. %b',
+                // week: '%e. %b',
+                // month: '%b \'%y',
+                // year: '%Y'
             }
         },
         series : []
-        // series : [{
-        //     name : 'Heap Usage',
-        //     data : heap,
-        //     type : 'area',
-        //     threshold : null,
-        //     tooltip : {
-        //         valueDecimals : 2
-        //     },
-        //     fillColor : {
-        //         linearGradient : {
-        //             x1: 0, 
-        //             y1: 0, 
-        //             x2: 0, 
-        //             y2: 1
-        //         },
-        //         stops : [[0, Highcharts.getOptions().colors[0]], [1, 'rgba(0,0,0,0)']]
-        //     }
-        // }]
     };
 
     //add heap
     var max = 0;
+    var count = 0;
     for(var execution in heap_data.data){
         if(heap_data.max[execution] > max)
             max = heap_data.max[execution];
 
         var serie = {
-                name : execution,
-                data : heap_data.data[execution],
-                type : 'area',
-                threshold : null,
-                tooltip : {
-                    valueDecimals : 2
-                },
-                //fillOpacity : 0.6
-                // fillColor : {
-                //     linearGradient : {
-                //         x1: 0, 
-                //         y1: 0, 
-                //         x2: 0, 
-                //         y2: 1
-                //     },
-                //     stops : [[0, Highcharts.getOptions().colors[0]], [1, 'rgba(0,0,0,0)']]
-                // }
-            };
-            options.series.push(serie);
+            //name : execution,
+            name: heap_data.executions[count++],
+            data : heap_data.data[execution],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                valueDecimals : 2
+            }
         };
-        
-        //check if something exists
-        var index = Object.keys(ts_data.data)[0];
-        var timestamps = ts_data.data[index];
-        var legend = ts_data.legend[index];
-        
-        //add timestamps
-        var lastTime = 0;
-        for(var i=0; i<timestamps.length;i++){
-
-            var serie = {
-                name : legend[i],
-                data: [[lastTime,max], [timestamps[i],max]],
-                type : 'area',
-                threshold : null,
-                tooltip : {
-                    valueDecimals : 2
-                },
-                //fillColor: "green"
-                fillOpacity: 0.2
-            };
-
             options.series.push(serie);
-            lastTime = timestamps[i];
-        }
-    // }
+    };
+        
+    //check if something exists
+    var index = Object.keys(ts_data.data)[0];
+    var timestamps = ts_data.data[index];
+    var legend = ts_data.legend[index];
+    
+    //add timestamps
+    var lastTime = 0;
+    for(var i=0; i<timestamps.length;i++){
+        var serie = {
+            name : legend[i],
+            data: [[lastTime,max], [timestamps[i],max]],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                valueDecimals : 2
+            },
+            //fillColor: "green"
+            fillOpacity: 0.2
+        };
+
+        options.series.push(serie);
+        lastTime = timestamps[i];
+    }
 
     $('#heap_chart').highcharts('StockChart', options);
 }
@@ -124,10 +91,7 @@ function createFunctionTimeChart(){
             type: 'area'
         },
         title: {
-            text: 'Historic and Estimated Worldwide Population Distribution by Region'
-        },
-        subtitle: {
-            text: 'Source: Wikipedia.org'
+            text: '% of time spent by each javascript function'
         },
         xAxis: {
             //categories: ['1750', '1800', '1850', '1900', '1950', '1999', '2050'],
@@ -143,7 +107,7 @@ function createFunctionTimeChart(){
             }
         },
         tooltip: {
-            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f} millions)<br/>',
+            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:.0f} ms)<br/>',
             shared: true
         },
         plotOptions: {
@@ -157,24 +121,7 @@ function createFunctionTimeChart(){
                 }
             }
         },
-        series: [
-        // {
-        //     name: 'Asia',
-        //     data: [502, 635, 809, 947, 1402, 3634, 5268]
-        // }, {
-        //     name: 'Africa',
-        //     data: [106, 107, 111, 133, 221, 767, 1766]
-        // }, {
-        //     name: 'Europe',
-        //     data: [163, 203, 276, 408, 547, 729, 628]
-        // }, {
-        //     name: 'America',
-        //     data: [18, 31, 54, 156, 339, 818, 1201]
-        // }, {
-        //     name: 'Oceania',
-        //     data: [2, 2, 2, 6, 13, 30, 46]
-        // }
-        ]
+        series: []
     };
 
     options.xAxis.categories = functions_data.executions;
@@ -187,45 +134,7 @@ function createFunctionTimeChart(){
 }
 
 
-
-
-// function createFunctionTimeChart(round){
-//     var time = JSON.parse(httpGet("/functionstime/"))[round];
-
-//     $('#time_chart_'+round).highcharts({
-//         chart: {
-//             plotBackgroundColor: null,
-//             plotBorderWidth: null,
-//             plotShadow: false
-//         },
-//         title: {
-//             text: 'Time spent by javascript operations [%]'
-//         },
-//         tooltip: {
-//             pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-//         },
-//         plotOptions: {
-//             pie: {
-//                 allowPointSelect: true,
-//                 cursor: 'pointer',
-//                 dataLabels: {
-//                     enabled: true,
-//                     color: '#000000',
-//                     connectorColor: '#000000',
-//                     format: '<b>{point.name}</b>: {point.percentage:.1f} %'
-//                 },
-//                 showInLegend: true
-//             }
-//         },
-//         series: [{
-//             type: 'pie',
-//             name: '% time',
-//             data: time
-//         }]
-//     });
-// }
-
-function createRPCNumberChart(round){
+function createRPCNumberChart(){
     var rpc_frequency = JSON.parse(httpGet("/rpcfrequency/"));
     var options = {
         chart: {
@@ -246,7 +155,7 @@ function createRPCNumberChart(round){
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                '<td style="padding:0"><b>{point.y:.1f} RPCs</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -260,21 +169,20 @@ function createRPCNumberChart(round){
         series: []
     };
 
+    var count=0;
     for(var execution in rpc_frequency.data){
         var serie = {
             //name: '#RPCs',
-            name: execution,
+            name: rpc_frequency.executions[count++],
             data: rpc_frequency.data[execution]
         };
         options.series.push(serie);
     }
 
-    $('#rpc_frequency_chart').highcharts(options);
-
-    
+    $('#rpc_frequency_chart').highcharts(options); 
 }
 
-function createRPCTrafficChart(round){
+function createRPCTrafficChart(){
     var rpc_traffic = JSON.parse(httpGet("/rpctraffic/"));
     
     var options = {
@@ -296,7 +204,7 @@ function createRPCTrafficChart(round){
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                '<td style="padding:0"><b>{point.y:.1f} bytes</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -310,10 +218,10 @@ function createRPCTrafficChart(round){
         series: []
     };
 
+    var count=0;
     for(var execution in rpc_traffic.data){
         var serie = {
-            //name: '#RPCs',
-            name: execution,
+            name: rpc_traffic.executions[count++],
             data: rpc_traffic.data[execution]
         };
         options.series.push(serie);
@@ -325,6 +233,6 @@ function createRPCTrafficChart(round){
 function startReport(){
     createHeapChart();
     createFunctionTimeChart();
-    createRPCNumberChart("1111");
-    createRPCTrafficChart("1111");
+    createRPCNumberChart();
+    createRPCTrafficChart();
 }
