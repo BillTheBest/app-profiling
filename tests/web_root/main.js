@@ -124,7 +124,9 @@ var saveTestsuite = function(){
 	} 
 	console.log("saving",data.testSuite);
 	$.post( "/testsuite/"+data.fileName, data.testSuite, function( result ) {
-  		loadTestsuite(data.fileName);
+		if(result&&result.status==="ok"){
+  			loadTestsuite(result.filename);
+  		}
 	});
 };
 
@@ -139,7 +141,7 @@ var removeTestsuite = function(){
 };
 
 var linkTestsuite = function(e){
-	if(e.target.nodeName!="INPUT" || e.target.type!='button') return;
+	if(e.target.nodeName!="A" && (e.target.nodeName!="INPUT" || e.target.type!='button')) return;
 	var li = $(e.target).closest('li');
 	if(typeof li.data("tc") === "number"){
 		var text = e.target.previousSibling;
