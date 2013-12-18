@@ -18,11 +18,11 @@ var linkListTestsuites = function(){
 	  var items = [];
 	  $.each( data, function( key, val ) {
 	  	if(val&&val.name&&val.title)
-	    items.push( "<li data-file='" + val.name + "'>" + val.title + " (click to edit "+val.name+")" );
+	    items.push( "<li data-file='" + val.name + "'>" + val.title + " <input type='button' value='edit "+val.name+"' />" );
 			if (val.testCases){
 				items.push( "<ul>");
 				$.each( val.testCases, function( tcx, tcd ) {
-					items.push( "<li data-file='" + val.name + "' data-tc='" + tcx + "'>"+(tcx+1)+ ". " + tcd + " (click to execute)" );
+					items.push( "<li data-file='" + val.name + "' data-tc='" + tcx + "'>"+(tcx+1)+ ". " + tcd + " <input type='text' class='longwidth' placeholder='specify a description for this execution' /><input type='button' value='execute' />" );
 				});
 				items.push( "</ul>");
 			}
@@ -35,8 +35,48 @@ var linkListTestsuites = function(){
 	_viewModel = {visible:{}};
 };
 
-var executeTestcase = function(suite,tc){
-		$.getJSON( "/testsuite/"+suite+"/testcase/"+tc, function( data ) {
+var linkListReports = function(){
+	$(".tab.reports .view").hide();
+	$(".tab.reports .view.list").show();
+	$(".tab.reports ul").empty();
+	$(".tab.reports ul").append("<li>loading reports...");
+	$.getJSON( "/profiles/", function( data ) {
+	  var items = [];
+	  $.each( data, function( key, val ) {
+	    items.push( "<li>" + key + ".json" );
+				items.push( "<ul>");
+				$.each( val, function( tcx, tcd ) {
+					items.push( "<li data-file='" + key + "' data-tc='" + tcx + "'>"+(parseInt(tcx)+1)+ ". Testcase ("+tcd[0].testCaseName+") with "+tcd.length+" executions <input type='button' value='visualise' />" );
+				});
+				items.push( "</ul>");
+			items.push( "</li>");
+	  });
+	 
+	  $(".tab.reports ul").empty();
+	  $(".tab.reports ul").append(items.join( "" ));
+	});
+};
+
+var linkReport = function(e){
+	if(e.target.nodeName!="INPUT" || e.target.type!='button') return;
+	var li = $(e.target).closest('li');
+	if(typeof li.data("tc") === "number" && li.data("file")){
+		$(".viewReportListLog").text("starting conversion of raw data...");
+		$.getJSON( "/report/"+li.data("file")+"/testcase/"+li.data("tc"), function( data ) {
+			if(data&&data.status==="ok"){
+				$(".viewReportListLog").text("conversion ok.");
+
+			}else{
+				$(".viewReportListLog").text("conversion failed.");
+			}
+
+		});
+		//displayReport(li.data("file"),li.data("tc"));
+	}
+};
+
+var executeTestcase = function(suite,tc,desc){
+		$.getJSON( "/testsuite/"+suite+"/testcase/"+tc+"?desc="+encodeURIComponent(desc), function( data ) {
 		  if(!data || data.error){
 		  	$(".viewListLog").text(JSON.stringify(data.error));
 		  }else{
@@ -98,9 +138,12 @@ var removeTestsuite = function(){
 };
 
 var linkTestsuite = function(e){
+	if(e.target.nodeName!="INPUT" || e.target.type!='button') return;
 	var li = $(e.target).closest('li');
 	if(typeof li.data("tc") === "number"){
-		executeTestcase(li.data("file"),li.data("tc"));
+		var text = e.target.previousSibling;
+		text = text?text.value:"";
+		executeTestcase(li.data("file"),li.data("tc"),text);
 	} else {
 		loadTestsuite(li.data("file"));
 	}
@@ -323,9 +366,11 @@ $(function(){
 	$(".link.testsuites").click(linkTestsuites);
 	$(".link.reports").click(linkReports);
 	$(".link.listtestsuites").click(linkListTestsuites);
-	$(".link.listreports").click(startReport);
 
 	$(".link.testsuite").click(linkTestsuite);
 	$(".tab.testsuites ul").click(linkTestsuite);
 	$(".tab.testsuites .view.testcase").click(clickTestsuite);
+
+	$(".link.listreports").click(linkListReports);
+	$(".tab.reports ul").click(linkReport);
 })
