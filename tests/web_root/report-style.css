@@ -1,12 +1,14 @@
-.heap_style, .functions_style{
+.heap_style{
     min-width: 310px; 
     height: 400px; 
     margin-bottom: 100px;
 }
 
-/*.frequency_style, .traffic_style {
-    width: 500px; 
-}*/
+.functions_style{
+    min-width: 310px; 
+    height: 800px; 
+    margin-bottom: 100px;
+}
 
 .frequency_style {
     float: left;
