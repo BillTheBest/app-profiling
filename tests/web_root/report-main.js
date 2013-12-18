@@ -6,9 +6,9 @@ function httpGet(theUrl){
     return xmlHttp.responseText;
 }
 
-function createHeapChart(){
-    var heap_data = JSON.parse(httpGet("/heap/"));
-    var ts_data = JSON.parse(httpGet("/timestamps/"));
+function createHeapChart(devname){
+    var heap_data = JSON.parse(httpGet("/heap/"+devname));
+    var ts_data = JSON.parse(httpGet("/timestamps/"+devname));
 
     var options = {
         rangeSelector : {
@@ -83,8 +83,8 @@ function createHeapChart(){
     $('#heap_chart').highcharts('StockChart', options);
 }
 
-function createFunctionTimeChart(){
-    var functions_data = JSON.parse(httpGet("/functionstime/"));
+function createFunctionTimeChart(devname){
+    var functions_data = JSON.parse(httpGet("/functionstime/"+devname));
 
     var options = {
         chart: {
@@ -134,8 +134,8 @@ function createFunctionTimeChart(){
 }
 
 
-function createRPCNumberChart(){
-    var rpc_frequency = JSON.parse(httpGet("/rpcfrequency/"));
+function createRPCNumberChart(devname){
+    var rpc_frequency = JSON.parse(httpGet("/rpcfrequency/"+devname));
     var options = {
         chart: {
             type: 'column'
@@ -182,8 +182,8 @@ function createRPCNumberChart(){
     $('#rpc_frequency_chart').highcharts(options); 
 }
 
-function createRPCTrafficChart(){
-    var rpc_traffic = JSON.parse(httpGet("/rpctraffic/"));
+function createRPCTrafficChart(devname){
+    var rpc_traffic = JSON.parse(httpGet("/rpctraffic/"+devname));
     
     var options = {
         chart: {
