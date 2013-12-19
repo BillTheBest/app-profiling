@@ -47,7 +47,7 @@ var linkListReports = function(){
 				items.push( "<ul>");
 				$.each( val, function( valx, val2 ) {
 					$.each( val2, function( tcx, tcd ) {
-						items.push( "<li data-file='" + key + "' data-tc='" + valx + "'>"+(parseInt(valx)+1)+ ". Testcase ("+tcd[0].testCaseName+") with "+tcd.length+" executions <input type='button' value='visualise' />" );
+						items.push( "<li data-file='" + key + "' data-tc='" + valx + "'>"+(parseInt(valx)+1)+ ". Testcase ("+tcd[0].testCaseName+") with "+tcd.length+" executions <input data-device='"+tcx+"' type='button' value='visualise' />" );
 					});
 				});
 				items.push( "</ul>");
@@ -67,7 +67,7 @@ var linkReport = function(e){
 		$.getJSON( "/report/"+li.data("file")+"/testcase/"+li.data("tc"), function( data ) {
 			if(data&&data.status==="ok"){
 				$(".viewReportListLog").text("conversion ok.");
-				startReport();
+				startReport($(e.target).data("device"));
 
 			}else{
 				$(".viewReportListLog").text("conversion failed.");
