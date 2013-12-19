@@ -12,7 +12,8 @@ function createHeapChart(devname){
 
     var options = {
         rangeSelector : {
-            selected : 1
+            selected : 1,
+            inputEnabled: false
         },
         title : {
             text : 'Max Heap Usage during profiling'
@@ -124,12 +125,24 @@ function createFunctionTimeChart(devname){
         series: []
     };
 
+    
+    if(functions_data.executions.length == 1){ // then duplicate values
+        for(var f in functions_data.data){
+            var tmp = functions_data.data[f];
+            tmp.push(functions_data.data[f][0]);
+            options.series.push({name:f,data:tmp});
+        }
+    }
+    else{
+        for(var f in functions_data.data){
+            options.series.push({name:f,data:functions_data.data[f]});
+        }
+    }
+
+    if(functions_data.executions.length == 1)
+        functions_data.executions.push(functions_data.executions[0]);
     options.xAxis.categories = functions_data.executions;
     
-    
-    for(var f in functions_data.data){
-        options.series.push({name:f,data:functions_data.data[f]});
-    }
     $('#time_chart').highcharts(options);
 }
 
