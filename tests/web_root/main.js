@@ -45,8 +45,10 @@ var linkListReports = function(){
 	  $.each( data, function( key, val ) {
 	    items.push( "<li>" + key + ".json" );
 				items.push( "<ul>");
-				$.each( val, function( tcx, tcd ) {
-					items.push( "<li data-file='" + key + "' data-tc='" + tcx + "'>"+(parseInt(tcx)+1)+ ". Testcase ("+tcd[0].testCaseName+") with "+tcd.length+" executions <input type='button' value='visualise' />" );
+				$.each( val, function( valx, val2 ) {
+					$.each( val2, function( tcx, tcd ) {
+						items.push( "<li data-file='" + key + "' data-tc='" + valx + "'>"+(parseInt(valx)+1)+ ". Testcase ("+tcd[0].testCaseName+") with "+tcd.length+" executions <input type='button' value='visualise' />" );
+					});
 				});
 				items.push( "</ul>");
 			items.push( "</li>");

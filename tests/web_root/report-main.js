@@ -230,9 +230,9 @@ function createRPCTrafficChart(devname){
     $('#rpc_traffic_chart').highcharts(options);
 }
 
-function startReport(){
-    createHeapChart();
-    createFunctionTimeChart();
-    createRPCNumberChart();
-    createRPCTrafficChart();
+function startReport(devname){
+    createHeapChart(devname);
+    createFunctionTimeChart(devname);
+    createRPCNumberChart(devname);
+    createRPCTrafficChart(devname);
 }
