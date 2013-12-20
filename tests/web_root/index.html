@@ -7,9 +7,10 @@
     <script type="text/javascript" src="main.js"></script>
     <!--reporting-->
     <link rel="stylesheet" type="text/css" href="report-style.css" />
-    <script src="http://code.highcharts.com/stock/highstock.js"></script>
-    <script src="http://code.highcharts.com/stock/modules/exporting.js"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <!-- <script src="http://code.highcharts.com/stock/highstock.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script> -->
+    <script src="highcharts/highstock.js"></script>
+    <script src="highcharts/exporting.js"></script>
     <script src="report-main.js"></script>
     <meta charset="UTF-8">
 </head>
@@ -53,12 +54,14 @@
 	    </div>
 	    <div class="view devices">
 	    </div>
-	    <div id="heap_chart" class="heap_style"></div>
-   		<div id="time_chart" class="functions_style"></div>
-        <span>
+	    <div id="heap_chart" class="chart heap_style"></div>
+   		<div id="time_chart" class="chart functions_style"></div>
+        <span class="chart">
             <div id="rpc_frequency_chart" class="frequency_style"></div>
             <div id="rpc_traffic_chart" class="traffic_style"></div>
         </span>
+        <div id="rpc_received_chart" class="chart rpc_style"></div>
+        <div id="rpc_sent_chart" class="chart rpc_style"></div>
     </div>  
     <!-- ----------------------------------------------------------- -->
 
