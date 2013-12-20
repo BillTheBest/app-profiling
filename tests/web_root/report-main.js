@@ -6,13 +6,15 @@ function httpGet(theUrl){
     return xmlHttp.responseText;
 }
 
+var ts_data = {}; 
+
 function createHeapChart(devname){
     var heap_data = JSON.parse(httpGet("/heap/"+devname));
-    var ts_data = JSON.parse(httpGet("/timestamps/"+devname));
 
     var options = {
         rangeSelector : {
-            selected : 1
+            selected : 1,
+            inputEnabled: false
         },
         title : {
             text : 'Max Heap Usage during profiling'
@@ -23,14 +25,6 @@ function createHeapChart(devname){
         xAxis:{
             dateTimeLabelFormats: {
                 millisecond: '%S.%Ls'
-                // ,
-                // second: '%H:%M:%S',
-                // minute: '%H:%M',
-                // hour: '%H:%M',
-                // day: '%e. %b',
-                // week: '%e. %b',
-                // month: '%b \'%y',
-                // year: '%Y'
             }
         },
         series : []
@@ -44,14 +38,14 @@ function createHeapChart(devname){
             max = heap_data.max[execution];
 
         var serie = {
-            //name : execution,
             name: heap_data.executions[count++],
             data : heap_data.data[execution],
             type : 'area',
             threshold : null,
             tooltip : {
                 valueDecimals : 2
-            }
+            },
+            fillOpacity: 0
         };
             options.series.push(serie);
     };
@@ -73,7 +67,7 @@ function createHeapChart(devname){
                 valueDecimals : 2
             },
             //fillColor: "green"
-            fillOpacity: 0.2
+            fillOpacity: 0.1
         };
 
         options.series.push(serie);
@@ -124,12 +118,24 @@ function createFunctionTimeChart(devname){
         series: []
     };
 
+    
+    if(functions_data.executions.length == 1){ // then duplicate values
+        for(var f in functions_data.data){
+            var tmp = functions_data.data[f];
+            tmp.push(functions_data.data[f][0]);
+            options.series.push({name:f,data:tmp});
+        }
+    }
+    else{
+        for(var f in functions_data.data){
+            options.series.push({name:f,data:functions_data.data[f]});
+        }
+    }
+
+    if(functions_data.executions.length == 1)
+        functions_data.executions.push(functions_data.executions[0]);
     options.xAxis.categories = functions_data.executions;
     
-    
-    for(var f in functions_data.data){
-        options.series.push({name:f,data:functions_data.data[f]});
-    }
     $('#time_chart').highcharts(options);
 }
 
@@ -230,9 +236,167 @@ function createRPCTrafficChart(devname){
     $('#rpc_traffic_chart').highcharts(options);
 }
 
+function createRPCReceivedTrafficOverTime(devname){
+    var rpc_data = JSON.parse(httpGet("/rpcreceived/"+devname));
+    // var ts_data = JSON.parse(httpGet("/timestamps/"+devname));
+
+    var options = {
+        rangeSelector : {
+            enabled:false
+        },
+        title : {
+            text : 'Received bytes [RPCs]'
+        },
+        legend:{
+            enabled :true
+        },
+        xAxis:{
+            dateTimeLabelFormats: {
+                millisecond: '%S.%Ls'
+            }
+        },
+        navigator:{
+            enabled : false
+        },
+        series : []
+    };
+
+    //add rpcs
+    var max = 0;
+    var count = 0;
+    for(var execution in rpc_data.data){
+        if(rpc_data.max[execution] > max)
+            max = rpc_data.max[execution];
+
+        var serie = {
+            //name : execution,
+            name: rpc_data.executions[count++],
+            data : rpc_data.data[execution],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                valueDecimals : 2
+            },
+            fillOpacity: 0
+        };
+            options.series.push(serie);
+    };
+        
+    //check if something exists
+    var index = Object.keys(ts_data.data)[0];
+    var timestamps = ts_data.data[index];
+    var legend = ts_data.legend[index];
+    
+    //add timestamps
+    var lastTime = 0;
+    for(var i=0; i<timestamps.length;i++){
+        var serie = {
+            name : legend[i],
+            data: [[lastTime,max], [timestamps[i],max]],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                // valueDecimals : 2,
+                dateTimeLabelFormats: {
+                    millisecond: '%S.%Ls',
+                    second:"%S"
+                }
+            },
+            //fillColor: "green"
+            fillOpacity: 0.1
+        };
+
+        options.series.push(serie);
+        lastTime = timestamps[i];
+    }
+
+    $('#rpc_received_chart').highcharts('StockChart', options);
+}
+
+function createRPCSentTrafficOverTime(devname){
+    var rpc_data = JSON.parse(httpGet("/rpcsent/"+devname));
+    
+
+    var options = {
+        rangeSelector : {
+            enabled:false
+        },
+        title : {
+            text : 'Sent bytes [RPCs]'
+        },
+        legend:{
+            enabled :true
+        },
+        xAxis:{
+            dateTimeLabelFormats: {
+                millisecond: '%S.%Ls'
+            }
+        },
+        navigator:{
+            enabled : false
+        },
+        series : []
+    };
+
+    //add rpcs
+    var max = 0;
+    var count = 0;
+    for(var execution in rpc_data.data){
+        if(rpc_data.max[execution] > max)
+            max = rpc_data.max[execution];
+
+        var serie = {
+            //name : execution,
+            name: rpc_data.executions[count++],
+            data : rpc_data.data[execution],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                valueDecimals : 2
+            },
+            fillOpacity: 0
+        };
+            options.series.push(serie);
+    };
+        
+    //check if something exists
+    var index = Object.keys(ts_data.data)[0];
+    var timestamps = ts_data.data[index];
+    var legend = ts_data.legend[index];
+    
+    //add timestamps
+    var lastTime = 0;
+    for(var i=0; i<timestamps.length;i++){
+        var serie = {
+            name : legend[i],
+            data: [[lastTime,max], [timestamps[i],max]],
+            type : 'area',
+            threshold : null,
+            tooltip : {
+                // valueDecimals : 2,
+                dateTimeLabelFormats: {
+                    millisecond: '%S.%Ls',
+                    second:"%S"
+                }
+            },
+            //fillColor: "green"
+            fillOpacity: 0.1
+        };
+
+        options.series.push(serie);
+        lastTime = timestamps[i];
+    }
+
+    $('#rpc_sent_chart').highcharts('StockChart', options);
+
+}
+
 function startReport(devname){
+    ts_data = JSON.parse(httpGet("/timestamps/"+devname));
     createHeapChart(devname);
     createFunctionTimeChart(devname);
     createRPCNumberChart(devname);
     createRPCTrafficChart(devname);
+    createRPCReceivedTrafficOverTime(devname);
+    createRPCSentTrafficOverTime(devname);
 }
