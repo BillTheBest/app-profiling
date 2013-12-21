@@ -85,7 +85,7 @@ function createFunctionTimeChart(devname){
             type: 'area'
         },
         title: {
-            text: '% of time spent by each javascript function'
+            text: '% of time spent by processing calculations'
         },
         xAxis: {
             //categories: ['1750', '1800', '1850', '1900', '1950', '1999', '2050'],
